@@ -1,0 +1,65 @@
+---
+name: "text_craft"
+dataIns:
+  - name: "givenInput"
+    type: "string"
+    source: "s"
+  - name: "searchPattern"
+    type: "string"
+    source: "p"
+  - name: "batchSize"
+    type: "number"
+    source: "w"
+  - name: "occurrenceThreshold"
+    type: "number"
+    source: "m"
+workflowBody:
+  - function:
+      name: "Split"
+      type: "Split"
+      dataIns:
+        - name: "givenInputStr"
+          type: "string"
+          source: "text_craft/givenInput"
+        - name: "batchSizeInt"
+          type: "number"
+          source: "text_craft/batchSize"
+      dataOuts:
+        - name: "splitBatches"
+          type: "string"
+  - function:
+      name: "countOccurrences"
+      type: "count"
+      dataIns:
+        - name: "batchStr"
+          type: "string"
+          source: "Split/splitBatches"
+        - name: "patternStr"
+          type: "string"
+          source: "text_craft/searchPattern"
+      dataOuts:
+        - name: "count"
+          type: "number"
+  - function:
+      name: "textModifier"
+      type: "textModify"
+      dataIns:
+        - name: "textStr"
+          type: "string"
+          source: "text_craft/givenInput"
+        - name: "patternStr"
+          type: "string"
+          source: "text_craft/searchPattern"
+        - name: "occurrenceHolderInt"
+          type: "number"
+          source: "text_craft/occurrenceThreshold"
+      dataOuts:
+        - name: "modifiedText"
+          type: "string"
+dataOuts:
+  - name: "totalOccurrencesInt"
+    type: "number"
+    source: "countOccurrences/count"
+  - name: "modifiedTextStr"
+    type: "string"
+    source: "textModifier/modifiedText"
